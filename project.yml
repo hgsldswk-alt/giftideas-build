@@ -1,0 +1,129 @@
+name: GiftIdeas
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  knownRegions: [en, zh-Hans, zh-Hant]
+settings:
+  base:
+    APP_ID: com.hgsldswk.giftideas
+    APP_STORE_ID: ""
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+targets:
+  GiftIdeas:
+    type: application
+    platform: iOS
+    sources: [GiftIdeas, Shared]
+    dependencies:
+      - target: GiftIdeasShare
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID)
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: GiftIdeas AppStore
+    entitlements:
+      path: GiftIdeas/GiftIdeas.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.hgsldswk.giftideas]
+        keychain-access-groups: [$(AppIdentifierPrefix)com.hgsldswk.giftideas.trial-anchor]
+    info:
+      path: GiftIdeas/Info.plist
+      properties:
+        CFBundleDisplayName: Gift Ideas
+        CFBundleDevelopmentRegion: en
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: Paper
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        APP_STORE_ID: $(APP_STORE_ID)
+        TrialKeychainAccessGroup: $(AppIdentifierPrefix)com.hgsldswk.giftideas.trial-anchor
+        CFBundleURLTypes:
+          - CFBundleURLName: com.hgsldswk.giftideas.open
+            CFBundleURLSchemes: [giftideas]
+  GiftIdeasShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - GiftIdeasShare
+      - path: Shared
+        excludes: [PrivacyInfo.xcprivacy]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).share
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: GiftIdeas Share AppStore
+    entitlements:
+      path: GiftIdeasShare/GiftIdeasShare.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.hgsldswk.giftideas]
+    info:
+      path: GiftIdeasShare/Info.plist
+      properties:
+        CFBundleDisplayName: Gift Ideas
+        CFBundleDevelopmentRegion: en
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+              NSExtensionActivationSupportsWebPageWithMaxCount: 1
+              NSExtensionActivationSupportsText: true
+  GiftIdeasTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - GiftIdeasTests
+      - path: Shared
+        excludes: [Design.swift, PrivacyInfo.xcprivacy]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).tests
+        GENERATE_INFOPLIST_FILE: YES
+  GiftIdeasUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [GiftIdeasUITests]
+    dependencies:
+      - target: GiftIdeas
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: GiftIdeas
+schemes:
+  GiftIdeas:
+    build:
+      targets:
+        GiftIdeas: all
+        GiftIdeasTests: [test]
+    test:
+      config: Debug
+      targets: [GiftIdeasTests]
+  GiftIdeasUI:
+    build:
+      targets:
+        GiftIdeas: all
+        GiftIdeasUITests: [test]
+    test:
+      config: Debug
+      targets: [GiftIdeasUITests]
